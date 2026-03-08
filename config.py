@@ -1,0 +1,2 @@
+ASAUTH_TOKENS = {"xxx"}
+EXPIRY = 604_800

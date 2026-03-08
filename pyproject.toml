@@ -1,10 +1,11 @@
 [project]
-name = "agent-api"
+name = "agent-worker"
 version = "0.1.0"
-description = "Add your description here"
+description = "worker"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "docker>=7.1.0",
+    "aiodocker>=0.26.0",
     "fastapi>=0.135.1",
+    "uvicorn>=0.41.0",
 ]
