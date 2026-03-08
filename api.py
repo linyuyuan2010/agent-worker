@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 import fastapi
 import aiodocker
 import uvicorn
+import httpx
 
 import utils
 import init
@@ -17,13 +18,23 @@ import config
 logger = logging.getLogger("agent_worker")
 
 
-# 管理 Docker 连接器
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
-    task = asyncio.create_task(tasks.delete_expired_files())
+    """生命周期管理器"""
+    http_client = httpx.AsyncClient()
+
+    clear_expired_files = asyncio.create_task(tasks.delete_expired_files())
+    check_worker_load = asyncio.create_task(tasks.check_worker_load(http_client))
+
     app.state.docker = aiodocker.Docker()
+
     yield
-    task.cancel()
+
+    check_worker_load.cancel()
+
+    await http_client.aclose()
+    clear_expired_files.cancel()
+
     await app.state.docker.close()
 
 
