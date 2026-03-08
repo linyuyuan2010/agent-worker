@@ -50,4 +50,9 @@ async def kill_agent(item: models.KillRequest):
 async def delete_agent(item: models.DeleteRequest):
     success = await utils.delete_agent_instance(app.state.docker, item.agent_id)
 
+    if not success:
+        raise fastapi.exceptions.HTTPException(status_code=400, detail=models.format_response(False, "fail to delete agent"))
+    
+    return models.format_response(True, "success")
+
 uvicorn.run(app)
